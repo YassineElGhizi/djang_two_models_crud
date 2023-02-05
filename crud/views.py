@@ -1,9 +1,12 @@
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 from .models import Brand, Store
 from .forms import AddBrandForm, AddStoreForm
 from django.shortcuts import get_object_or_404
+from .serializers import BrandSerializer, StoreSerializer, CreateStoreSerializer
 
 
 # Create your views here.
@@ -65,3 +68,77 @@ def update_store(request, id):
             store.save()
             return redirect('list_stores')
     return render(request, 'store/edit.html', context={'store': store, 'brands': brands})
+
+
+@csrf_exempt
+def api_list_brands(request):
+    if request.method == 'GET':
+        brands = Brand.objects.all()
+        serializer = BrandSerializer(brands, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = BrandSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.data, status=400)
+
+
+@csrf_exempt
+def api_details_brands(request, id):
+    try:
+        brand = Brand.objects.get(pk=id)
+    except Brand.DoesNotExist:
+        return JsonResponse({'message': 'Brands Do not exists'}, status=404)
+
+    if request.method == 'DELETE':
+        brand.delete()
+        return JsonResponse({'message': 'Brand Has been deleted'}, status=200)
+
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = BrandSerializer(brand, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Brand Has been Updated'}, status=200)
+        return JsonResponse({'message': 'Eroor whiling updating Brand'}, status=400)
+
+
+@csrf_exempt
+def api_store(request):
+    if request.method == 'GET':
+        stores = Store.objects.all()
+        serializer = StoreSerializer(stores, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = CreateStoreSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, safe=False)
+        else:
+            return JsonResponse({'message': 'data not valide creating store'}, safe=False)
+
+
+@csrf_exempt
+def api_store_detail(request, id):
+    try:
+        store = Store.objects.get(pk=id)
+    except Store.DoesNotExist:
+        return JsonResponse({'message': 'Store Do not exists'}, status=404)
+
+    if request.method == 'DELETE':
+        store.delete()
+        return JsonResponse({'message': 'Store Has been deleted'}, status=200)
+
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = CreateStoreSerializer(store, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Brand Has been Updated'}, status=200)
+        else:
+            return JsonResponse({'message': 'Eroor whiling updating Store'}, status=400)
