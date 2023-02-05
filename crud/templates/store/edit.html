@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% block content %}
+<form method="post" action="{% url 'update_store' store.id %}">
+    {% csrf_token %}
+    <input type="text" name="name" value="{{store.name}}" required>
+    <select name="brand">
+        {% for brand in brands %}
+            <option value="{{brand.id}}">{{ brand.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Update</button>
+</form>
+{% endblock content%}

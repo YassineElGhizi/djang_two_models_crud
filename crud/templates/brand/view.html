@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Brands</h1>
+
+<h3>Brand List</h3>
+
+{% include 'brand/add.html' %}
+
+<br>
+<ul>
+    {% for brand in brands %}
+    <p>
+        <div style="flex-direction: row;
+                    flex: 1;
+                    display: flex;
+                    margin : 1rem auto;
+                    justify-content: space-around;
+                    width: 25%">
+            <p>{{ brand.name }}</p>
+        <span>
+                <a href="{% url 'delete_brand' brand.id %}">Delete</a>
+                <a href="{% url 'update_brand' brand.id %}">Update</a>
+        </span>
+        </div>
+    </p>
+    {% endfor %}
+</ul>
+
+{% endblock content%}

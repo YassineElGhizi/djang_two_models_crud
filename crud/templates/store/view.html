@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Stores</h1>
+
+
+<h3>Store List</h3>
+
+
+{% include 'store/add.html' %}
+
+<br>
+<br>
+<br>
+<table style="border:1px solid black;">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for store in stores %}
+    <tr>
+        <td>{{ store.name }}</td>
+        <td>{{ store.brand.name }}</td>
+        <td>
+            <a href="{% url 'delete_store' store.id %}">Delete</a>
+            <a href="{% url 'update_store' store.id %}">update</a>
+        </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+
+{% endblock content%}

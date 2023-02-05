@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% block content %}
+<form method="post" action="{% url 'update_brand' brand.id %}">
+    {% csrf_token %}
+    <input type="text" name="name" value="{{brand.name}}" required>
+    <button type="submit">Update</button>
+</form>
+{% endblock content%}
